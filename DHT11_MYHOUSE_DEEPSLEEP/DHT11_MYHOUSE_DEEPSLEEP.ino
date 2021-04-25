@@ -2,10 +2,11 @@
 #include <FirebaseESP32HTTPClient.h>
 #include <FirebaseJson.h>
 #include <DHT.h>
+#include "WiFi.h"
 #include <string.h>
 //Time
 #include<time.h>
-// Time  var
+// Time var
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 7 * 3600;
 const int daylightOffset_sec = 3600;
@@ -23,14 +24,17 @@ FirebaseJson json4; // Time
 
 //FirebaseJsonData jsonData;
 //FirebaseJsonArray arr1;
-#define FIREBASE_HOST "duc-bkhn-k62.firebaseio.com/"
+#define FIREBASE_HOST "duc-bkhn-k62.firebaseio.com"
 #define FIREBASE_AUTH "MOAca0CPWTTT7uXKQ7ULUbHBHo4Fs80bZDoN91ze"
 
 #define us_to_s 1000000
 #define time_sleep 60*60
 
-char ssid[] = "IoT";
-char pass[] = "66668888";
+//char ssid[] = "Async";
+//char pass[] = "0211000487252";
+
+char ssid[] = "Deviot JSC";
+char pass[] = "12345679";
 #define runEvery(t) for (static int last;\
                          (int)((int)millis() - last) >= (t);\
                          last += (t))

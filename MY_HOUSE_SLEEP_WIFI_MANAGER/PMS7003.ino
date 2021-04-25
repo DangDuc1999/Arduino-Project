@@ -1,43 +1,34 @@
-void readPMS7003(){
-  int index = 0;
-  char value;
-  char previousValue;
+void readPMS7003() {
+  Serial.println("Send read request...");
+  pms.requestRead();
 
-  while (Serial2.available()) {
-    value = Serial2.read();
-    if ((index == 0 && value != 0x42) || (index == 1 && value != 0x4d)) {
-      Serial.println("Cannot find the data header.");
-      break;
-    }
+  Serial.println("Wait max. 1 second for read...");
+  if (pms.readUntil(data))
+  {        
+    pm1 = data.PM_AE_UG_1_0;              
+   
+    pm2_5 = data.PM_AE_UG_2_5;
+ 
+    pm10 = data.PM_AE_UG_10_0; 
+    Serial.print("PM 1.0 (ug/m3): ");
+    Serial.println(data.PM_AE_UG_1_0);
 
-    if (index == 4 || index == 6 || index == 8 || index == 10 || index == 12 || index == 14) {
-      previousValue = value;
-    }
-    else if (index == 5) {
-      pm1 = 256 * previousValue + value;
-      Serial.print("{ ");
-      Serial.print("\"pm1\": ");
-      Serial.print(pm1);
-      Serial.print(" ug/m3");
-      Serial.print(", ");
-    }
-    else if (index == 7) {
-      pm2_5 = 256 * previousValue + value;
-      Serial.print("\"pm2_5\": ");
-      Serial.print(pm2_5);
-      Serial.print(" ug/m3");
-      Serial.print(", ");
-    }
-    else if (index == 9) {
-      pm10 = 256 * previousValue + value;
-      Serial.print("\"pm10\": ");
-      Serial.print(pm10);
-      Serial.print(" ug/m3");
-    } else if (index > 15) {
-      break;
-    }
-    index++;
+    Serial.print("PM 2.5 (ug/m3): ");
+    Serial.println(data.PM_AE_UG_2_5);
+
+    Serial.print("PM 10.0 (ug/m3): ");
+    Serial.println(data.PM_AE_UG_10_0);
   }
-  while (Serial2.available()) Serial2.read();
-  Serial.println(" }");
+  else
+  {
+    Serial.println("No data.");
+  }    
+  //  while (Serial2.available()) Serial2.read();
+  json6.clear();
+  json6.set("/pm1", pm1);
+  json6.set("/pm25", pm2_5);
+  json6.set("/pm10", pm10);
+  Firebase.set(firebaseData, "/PMS7003/Current", json6);
+  Firebase.set(firebaseData, "/PMS7003/History/" + Date() + "/" + String(Time_Date()), json6);
+
 }
